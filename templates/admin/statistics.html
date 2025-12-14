@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Statistika{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>👑 Admin Panel</h2>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/admin/dashboard" class="menu-item">
+                <span class="icon">📊</span>
+                Dashboard
+            </a>
+            <a href="/admin/employees" class="menu-item">
+                <span class="icon">👥</span>
+                Xodimlar
+            </a>
+            <a href="/admin/statistics" class="menu-item active">
+                <span class="icon">📊</span>
+                <span>Statistika</span>
+            </a>
+            <a href="/admin/salary" class="menu-item">
+                <span class="icon">💰</span>
+                <span>Maosh</span>
+            </a>
+            <a href="/admin/bot" class="menu-item">
+                <span class="icon">🤖</span>
+                Telegram Bot
+            </a>
+            <a href="/admin/logs" class="menu-item">
+                <span class="icon">📜</span>
+                Loglar
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="logout-btn">🚪 Chiqish</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="content-header">
+            <h1>📈 Statistika</h1>
+        </header>
+
+        <div class="content-section">
+            <h2>📊 Platform statistikasi</h2>
+            <div id="statsData" class="stats-details">
+                <p>Yuklanmoqda...</p>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+<script>
+    async function loadStats() {
+        try {
+            const response = await fetch('/api/stats');
+            const data = await response.json();
+
+            const html = `
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>${data.total_employees}</h3>
+                    <p>Jami xodimlar</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${data.total_users}</h3>
+                    <p>Jami foydalanuvchilar</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${data.total_tasks_today}</h3>
+                    <p>Bugungi vazifalar</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${data.total_tasks_completed}</h3>
+                    <p>Bajarilgan vazifalar</p>
+                </div>
+            </div>
+        `;
+
+            document.getElementById('statsData').innerHTML = html;
+        } catch (error) {
+            document.getElementById('statsData').innerHTML = '<p class="error">Xatolik yuz berdi</p>';
+        }
+    }
+
+    loadStats();
+</script>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Vazifalarim{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="employee-container">
+    <!-- Sidebar -->
+    <!-- Sidebar -->
+    {% include "employee/_sidebar.html" %}
+
+    <!-- Main -->
+    <main class="employee-main">
+        <header class="employee-header">
+            <div class="header-left">
+                <h1>📋 Vazifalarim</h1>
+                <p class="header-subtitle">Barcha vazifalaringiz</p>
+            </div>
+            <div class="header-right">
+                <button class="btn-primary" onclick="alert('Vazifa qo\'shish funksiyasi tez orada!')">➕ Yangi
+                    vazifa</button>
+            </div>
+        </header>
+
+        <!-- Tabs -->
+        <div class="task-tabs">
+            <button class="tab-btn active">Barcha (7)</button>
+            <button class="tab-btn">Bajarilmoqda (4)</button>
+            <button class="tab-btn">Tugallangan (3)</button>
+            <button class="tab-btn">Muddati o'tgan (0)</button>
+        </div>
+
+        <!-- Task Cards -->
+        <div class="task-cards">
+            <div class="dashboard-card">
+                <div class="task-card-header priority-high">
+                    <h3>Hisobotni tayyorlash</h3>
+                    <span class="priority-badge high">Muhim</span>
+                </div>
+                <div class="card-body">
+                    <p class="task-description">Oylik hisobot tayyorlash va rahbariyatga taqdim etish</p>
+                    <div class="task-meta">
+                        <span>⏰ Deadline: Bugun, 14:00</span>
+                        <span>👤 Mas'ul: {{ employee.full_name if employee else 'Siz' }}</span>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn-success" onclick="alert('Bajarildi!')">✓ Bajarildi</button>
+                        <button class="btn-secondary">👁️ Ko'rish</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="task-card-header priority-medium">
+                    <h3>Yig'ilishda qatnashish</h3>
+                    <span class="priority-badge medium">O'rtacha</span>
+                </div>
+                <div class="card-body">
+                    <p class="task-description">Haftalik jamoaviy yig'ilish va yangi proyektlarni muhokama qilish</p>
+                    <div class="task-meta">
+                        <span>⏰ Deadline: Bugun, 15:30</span>
+                        <span>📍 Zoom yoki Office</span>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn-success" onclick="alert('Bajarildi!')">✓ Bajarildi</button>
+                        <button class="btn-secondary">👁️ Ko'rish</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="task-card-header priority-low">
+                    <h3>Email javoblarini yozish</h3>
+                    <span class="priority-badge low">Past</span>
+                </div>
+                <div class="card-body">
+                    <p class="task-description">Kelgan emaillarni ko'rib chiqish va javob yozish</p>
+                    <div class="task-meta">
+                        <span>⏰ Deadline: Bugun, 17:00</span>
+                        <span>📧 10+ email</span>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn-success" onclick="alert('Bajarildi!')">✓ Bajarildi</button>
+                        <button class="btn-secondary">👁️ Ko'rish</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="task-card-header">
+                    <h3>Proyektni ko'rib chiqish</h3>
+                </div>
+                <div class="card-body">
+                    <p class="task-description">Yangi proyekt qoidalarini o'qish va fikr bildirish</p>
+                    <div class="task-meta">
+                        <span>⏰ Deadline: Ertaga</span>
+                        <span>📄 Hujjatlar</span>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn-success" onclick="alert('Bajarildi!')">✓ Bajarildi</button>
+                        <button class="btn-secondary">👁️ Ko'rish</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/employee_dashboard.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Kalendar{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="employee-container">
+    <!-- Sidebar -->
+    {% include "employee/_sidebar.html" %}
+
+    <main class="employee-main">
+        <header class="employee-header">
+            <h1>📅 Kalendar</h1>
+            <p class="header-subtitle">Tadbirlar va uchrashuvlar</p>
+        </header>
+
+        <div class="dashboard-card">
+            <div class="card-body" style="text-align: center; padding: 4rem 2rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">📅</div>
+                <h2>Kalendar tez orada!</h2>
+                <p style="color: var(--gray-600);">Bu sahifa hozirda ishlab chiqilmoqda.</p>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/employee_dashboard.js') }}"></script>
+{% endblock %}

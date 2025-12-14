@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Xodimlarni Boshqarish{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>👑 Admin Panel</h2>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/admin/dashboard" class="menu-item">
+                <span class="icon">📊</span>
+                Dashboard
+            </a>
+            <a href="/admin/employees" class="menu-item active">
+                <span class="icon">👥</span>
+                Xodimlar
+            </a>
+            <a href="/admin/statistics" class="menu-item">
+                <span class="icon">📈</span>
+                Statistika
+            </a>
+            <a href="/admin/salary" class="menu-item">
+                <span class="icon">💰</span>
+                Maosh
+            </a>
+            <a href="/admin/bot" class="menu-item">
+                <span class="icon">🤖</span>
+                Telegram Bot
+            </a>
+            <a href="/admin/logs" class="menu-item">
+                <span class="icon">📜</span>
+                Loglar
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="logout-btn">🚪 Chiqish</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="content-header">
+            <h1>👥 Xodimlarni Boshqarish</h1>
+            <button onclick="openAddEmployeeModal()" class="btn-primary">➕ Yangi xodim</button>
+        </header>
+
+        {% if subscription %}
+        <div class="subscription-info">
+            <p>
+                📦 Reja: <strong>{{ subscription.plan_type.upper() }}</strong> |
+                Limit: <strong>{{ employees|length }} / {{ subscription.employee_limit }}</strong>
+                {% if employees|length >= subscription.employee_limit %}
+                <span class="limit-warning">⚠️ Limit to'ldi!</span>
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+
+        <div class="content-section">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ism</th>
+                        <th>Email</th>
+                        <th>Lavozim</th>
+                        <th>Bo'lim</th>
+                        <th>Status</th>
+                        <th>Harakatlar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if employees %}
+                    {% for employee in employees %}
+                    <tr>
+                        <td>{{ employee.id }}</td>
+                        <td>{{ employee.full_name }}</td>
+                        <td>{{ employee.user.email }}</td>
+                        <td>{{ employee.position or '-' }}</td>
+                        <td>{{ employee.department or '-' }}</td>
+                        <td>
+                            <span class="status-badge status-{{ employee.status }}">
+                                {{ 'Faol' if employee.status == 'active' else 'Nofaol' }}
+                            </span>
+                        </td>
+                        <td>
+                            <button onclick="editEmployee({{ employee.id }})" class="btn-icon"
+                                title="Tahrirlash">✏️</button>
+                            <button onclick="deleteEmployee({{ employee.id }}, '{{ employee.full_name }}')"
+                                class="btn-icon" title="O'chirish">🗑️</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="no-data">Hali xodimlar yo'q</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<!-- Add Employee Modal -->
+<div id="addEmployeeModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>➕ Yangi xodim qo'shish</h2>
+            <button onclick="closeAddEmployeeModal()" class="close-btn">✖️</button>
+        </div>
+        <form id="addEmployeeForm" class="modal-form">
+            <div class="form-group">
+                <label>Ism familiya *</label>
+                <input type="text" name="full_name" required>
+            </div>
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label>Parol *</label>
+                <input type="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label>Telefon</label>
+                <input type="tel" name="phone">
+            </div>
+            <div class="form-group">
+                <label>Lavozim</label>
+                <input type="text" name="position">
+            </div>
+            <div class="form-group">
+                <label>Bo'lim</label>
+                <input type="text" name="department">
+            </div>
+            <div id="modalError" class="error-message"></div>
+            <div class="modal-actions">
+                <button type="button" onclick="closeAddEmployeeModal()" class="btn-secondary">Bekor qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+<script>
+    // Employee management functions
+    async function deleteEmployee(id, name) {
+        if (!confirm(`"${name}" xodimini o'chirishni tasdiqlaysizmi?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/employees/${id}`, {
+                method: 'DELETE'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showNotification('Xodim o\'chirildi', 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showNotification(data.error || 'Xatolik yuz berdi', 'error');
+            }
+        } catch (error) {
+            showNotification('Xatolik: ' + error.message, 'error');
+        }
+    }
+
+    function openAddEmployeeModal() {
+        document.getElementById('addEmployeeModal').style.display = 'flex';
+    }
+
+    function closeAddEmployeeModal() {
+        document.getElementById('addEmployeeModal').style.display = 'none';
+        document.getElementById('addEmployeeForm').reset();
+        document.getElementById('modalError').textContent = '';
+    }
+
+    document.getElementById('addEmployeeForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+
+        try {
+            const response = await fetch('/api/employees', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                showNotification('Xodim qo\'shildi!', 'success');
+                closeAddEmployeeModal();
+                setTimeout(() => location.reload(), 1000);
+            } else if (result.limit_reached) {
+                document.getElementById('modalError').textContent = result.error;
+                showNotification('Limit to\'ldi! Rejangizni yangilang.', 'error');
+            } else {
+                document.getElementById('modalError').textContent = result.error || 'Xatolik yuz berdi';
+            }
+        } catch (error) {
+            document.getElementById('modalError').textContent = 'Xatolik: ' + error.message;
+        }
+    });
+</script>
+{% endblock %}

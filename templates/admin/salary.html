@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Maosh boshqaruvi{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html' %}
+
+    <main class="admin-main">
+        <div class="page-header">
+            <h1>💰 Maosh boshqaruvi</h1>
+            <p>Xodimlar maoshini boshqarish va tarix</p>
+        </div>
+
+        <!-- Salary Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">💵</div>
+                <div class="stat-info">
+                    <h3 id="totalPayroll">0 UZS</h3>
+                    <p>Jami oylik fond</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-info">
+                    <h3 id="totalBonuses">0 UZS</h3>
+                    <p>Jami premiyalar</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📉</div>
+                <div class="stat-info">
+                    <h3 id="totalDeductions">0 UZS</h3>
+                    <p>Jami ajratishlar</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-info">
+                    <h3>{{ employees|length }}</h3>
+                    <p>Jami xodimlar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employee Salary Table -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2>Xodimlar maoshlari</h2>
+                <input type="text" id="searchInput" placeholder="🔍 Qidirish..." class="search-input">
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Xodim</th>
+                            <th>Lavozim</th>
+                            <th>Bo'lim</th>
+                            <th>Asosiy maosh</th>
+                            <th>Premiyalar</th>
+                            <th>Ajratishlar</th>
+                            <th>Joriy maosh</th>
+                            <th>Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeeTableBody">
+                        {% for employee in employees %}
+                        <tr data-id="{{ employee.id }}">
+                            <td>
+                                <div class="employee-cell">
+                                    <div class="avatar">{{ employee.full_name[0] }}</div>
+                                    <div>
+                                        <strong>{{ employee.full_name }}</strong>
+                                        <small>{{ employee.user.email }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ employee.position or '-' }}</td>
+                            <td>{{ employee.department or '-' }}</td>
+                            <td><strong>{{ '{:,.0f}'.format(employee.base_salary) }} {{ employee.salary_currency
+                                    }}</strong></td>
+                            <td class="text-success">+{{ '{:,.0f}'.format(employee.total_bonuses) }}</td>
+                            <td class="text-danger">-{{ '{:,.0f}'.format(employee.total_deductions) }}</td>
+                            <td><strong class="text-primary">{{ '{:,.0f}'.format(employee.current_salary) }} {{
+                                    employee.salary_currency }}</strong></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-sm btn-success"
+                                        onclick="openBonusModal({{ employee.id }}, '{{ employee.full_name }}')">
+                                        + Premia
+                                    </button>
+                                    <button class="btn-sm btn-warning"
+                                        onclick="openDeductionModal({{ employee.id }}, '{{ employee.full_name }}')">
+                                        - Ayirish
+                                    </button>
+                                    <button class="btn-sm btn-primary"
+                                        onclick="openBaseSalaryModal({{ employee.id }}, '{{ employee.full_name }}', {{ employee.base_salary }})">
+                                        ⚙️ Sozlash
+                                    </button>
+                                    <button class="btn-sm btn-secondary"
+                                        onclick="viewHistory({{ employee.id }}, '{{ employee.full_name }}')">
+                                        📊 Tarix
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Bonus Modal -->
+<div id="bonusModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>💰 Premia qo'shish</h3>
+            <button class="modal-close" onclick="closeModal('bonusModal')">&times;</button>
+        </div>
+        <form id="bonusForm">
+            <input type="hidden" id="bonusEmployeeId">
+            <div class="form-group">
+                <label>Xodim</label>
+                <input type="text" id="bonusEmployeeName" readonly class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Summa *</label>
+                <input type="number" id="bonusAmount" class="form-control" placeholder="Masalan: 500000" required>
+            </div>
+            <div class="form-group">
+                <label>Sabab</label>
+                <input type="text" id="bonusReason" class="form-control" placeholder="Masalan: Oylik premia">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('bonusModal')">Bekor qilish</button>
+                <button type="submit" class="btn-success">Qo'shish</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Deduction Modal -->
+<div id="deductionModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>⚠️ Maoshdan ayirish</h3>
+            <button class="modal-close" onclick="closeModal('deductionModal')">&times;</button>
+        </div>
+        <form id="deductionForm">
+            <input type="hidden" id="deductionEmployeeId">
+            <div class="form-group">
+                <label>Xodim</label>
+                <input type="text" id="deductionEmployeeName" readonly class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Summa *</label>
+                <input type="number" id="deductionAmount" class="form-control" placeholder="Masalan: 100000" required>
+            </div>
+            <div class="form-group">
+                <label>Sabab *</label>
+                <input type="text" id="deductionReason" class="form-control" placeholder="Masalan: Jarima" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('deductionModal')">Bekor qilish</button>
+                <button type="submit" class="btn-warning">Ayirish</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Base Salary Modal -->
+<div id="baseSalaryModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>⚙️ Asosiy maoshni o'zgartirish</h3>
+            <button class="modal-close" onclick="closeModal('baseSalaryModal')">&times;</button>
+        </div>
+        <form id="baseSalaryForm">
+            <input type="hidden" id="baseSalaryEmployeeId">
+            <div class="form-group">
+                <label>Xodim</label>
+                <input type="text" id="baseSalaryEmployeeName" readonly class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Yangi asosiy maosh *</label>
+                <input type="number" id="baseSalaryAmount" class="form-control" placeholder="Masalan: 6000000" required>
+            </div>
+            <div class="form-group">
+                <label>Sabab</label>
+                <input type="text" id="baseSalaryReason" class="form-control" placeholder="Masalan: Ko'tarilish">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('baseSalaryModal')">Bekor
+                    qilish</button>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- History Modal -->
+<div id="historyModal" class="modal">
+    <div class="modal-content" style="max-width: 900px;">
+        <div class="modal-header">
+            <h3>📊 Maosh tarixi</h3>
+            <button class="modal-close" onclick="closeModal('historyModal')">&times;</button>
+        </div>
+        <div style="padding: 1.5rem;">
+            <h4 id="historyEmployeeName" style="margin-bottom: 1rem;"></h4>
+            <div id="historyContent" style="max-height: 500px; overflow-y: auto;">
+                <!-- Transaction history will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/salary.js') }}"></script>
+{% endblock %}

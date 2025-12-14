@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Activity Loglar{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>👑 Admin Panel</h2>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/admin/dashboard" class="menu-item">
+                <span class="icon">📊</span>
+                Dashboard
+            </a>
+            <a href="/admin/employees" class="menu-item">
+                <span class="icon">👥</span>
+                Xodimlar
+            </a>
+            <a href="/admin/statistics" class="menu-item">
+                <span class="icon">📊</span>
+                <span>Statistika</span>
+            </a>
+            <a href="/admin/salary" class="menu-item">
+                <span class="icon">💰</span>
+                <span>Maosh</span>
+            </a>
+            <a href="/admin/bot" class="menu-item">
+                <span class="icon">🤖</span>
+                Telegram Bot
+            </a>
+            <a href="/admin/logs" class="menu-item active">
+                <span class="icon">📜</span>
+                Loglar
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="logout-btn">🚪 Chiqish</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="content-header">
+            <h1>📜 Activity Loglar</h1>
+        </header>
+
+        <div class="content-section">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Vaqt</th>
+                        <th>Foydalanuvchi</th>
+                        <th>Harakat turi</th>
+                        <th>Tavsif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if actions %}
+                    {% for action in actions %}
+                    <tr>
+                        <td>{{ action.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ action.user.email }}</td>
+                        <td><span class="badge">{{ action.action_type }}</span></td>
+                        <td>{{ action.description }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="no-data">Loglar yo'q</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

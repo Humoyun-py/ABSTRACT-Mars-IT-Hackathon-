@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Telegram Bot Boshqaruvi{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>👑 Admin Panel</h2>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/admin/dashboard" class="menu-item">
+                <span class="icon">📊</span>
+                Dashboard
+            </a>
+            <a href="/admin/employees" class="menu-item">
+                <span class="icon">👥</span>
+                Xodimlar
+            </a>
+            <a href="/admin/statistics" class="menu-item">
+                <span class="icon">📈</span>
+                Statistika
+            </a>
+            <a href="/admin/salary" class="menu-item">
+                <span class="icon">💰</span>
+                Maosh
+            </a>
+            <a href="/admin/bot" class="menu-item active">
+                <span class="icon">🤖</span>
+                Telegram Bot
+            </a>
+            <a href="/admin/logs" class="menu-item">
+                <span class="icon">📜</span>
+                Loglar
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="logout-btn">🚪 Chiqish</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="content-header">
+            <h1>🤖 Telegram Bot Boshqaruvi</h1>
+        </header>
+
+        <div class="content-section">
+            <h2>📢 Ommaviy xabar yuborish</h2>
+            <form id="broadcastForm" class="bot-form">
+                <div class="form-group">
+                    <label>Xabar matni</label>
+                    <textarea name="message" rows="4" placeholder="Barcha xodimlarga xabar..." required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">📤 Yuborish</button>
+            </form>
+        </div>
+
+        <div class="content-section">
+            <h2>👤 Xodimga xabar yuborish</h2>
+            <form id="notifyForm" class="bot-form">
+                <div class="form-group">
+                    <label>Xodim ID</label>
+                    <input type="number" name="employee_id" placeholder="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Xabar matni</label>
+                    <textarea name="message" rows="4" placeholder="Shaxsiy xabar..." required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">📤 Yuborish</button>
+            </form>
+        </div>
+
+        <div class="content-section">
+            <h2>📊 Bot statistikasi</h2>
+            <div id="botStats">
+                <p>🤖 Bot hozircha sozlanmagan</p>
+                <p>BotFather orqali bot yarating va tokenni <code>.env</code> fayliga qo'shing</p>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+<script>
+    document.getElementById('broadcastForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+
+        try {
+            const response = await fetch('/api/bot/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                showNotification('Xabar yuborildi!', 'success');
+                e.target.reset();
+            }
+        } catch (error) {
+            showNotification('Xatolik: ' + error.message, 'error');
+        }
+    });
+
+    document.getElementById('notifyForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+
+        try {
+            const response = await fetch('/api/bot/notify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                showNotification('Bildirishnoma yuborildi!', 'success');
+                e.target.reset();
+            }
+        } catch (error) {
+            showNotification('Xatolik: ' + error.message, 'error');
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Xodim Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="employee-container">
+    <!-- Sidebar Navigation -->
+    <!-- Sidebar Navigation -->
+    {% include "employee/_sidebar.html" %}
+
+    <!-- Top Navigation Bar -->
+    <div class="top-navbar">
+        <div class="breadcrumbs">
+            <span class="breadcrumb-item">🏠 Bosh sahifa</span>
+            <span class="breadcrumb-separator">›</span>
+            <span class="breadcrumb-item active">Dashboard</span>
+        </div>
+        <div class="quick-actions">
+            <a href="/employee/tasks" class="quick-btn">
+                <span>📋</span>
+                <span>Vazifalar</span>
+            </a>
+            <a href="/employee/profile" class="quick-btn">
+                <span>👤</span>
+                <span>Profil</span>
+            </a>
+            <a href="/employee/messages" class="quick-btn">
+                <span>💬</span>
+                <span>Xabarlar</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="employee-main">
+        <!-- Top Header -->
+        <header class="employee-header">
+            <div class="header-left">
+                <h1>Dashboard</h1>
+                <p class="header-subtitle">Xush kelibsiz, {{ employee.full_name if employee else 'Xodim' }}! 👋</p>
+            </div>
+            <div class="header-right">
+                <div class="header-actions">
+                    <button class="header-btn" title="Bildirishnomalar">
+                        🔔
+                        <span class="badge">3</span>
+                    </button>
+                    <div class="user-avatar">
+                        {{ employee.full_name[0] if employee else 'U' }}
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <div class="welcome-content">
+                <div class="welcome-text">
+                    <h2>Assalomu alaykum, {{ employee.full_name if employee else 'Xodim' }}! 🌟</h2>
+                    <p>{{ employee.position if employee else 'Lavozim' }} • {{ employee.department if employee else
+                        'Bo\'lim' }}</p>
+                    <p class="welcome-date">📅 Bugun: {{ today }}</p>
+                </div>
+                <div class="welcome-illustration">
+                    <div class="illustration-emoji">🎯</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card primary">
+                <div class="stat-header">
+                    <span class="stat-icon">📋</span>
+                    <span class="stat-trend up">+2</span>
+                </div>
+                <div class="stat-body">
+                    <h3>{{ employee.tasks_today if employee else 0 }}</h3>
+                    <p>Bugungi vazifalar</p>
+                </div>
+                <div class="stat-footer">
+                    <a href="/employee/tasks">Ko'rish →</a>
+                </div>
+            </div>
+
+            <div class="stat-card success">
+                <div class="stat-header">
+                    <span class="stat-icon">✅</span>
+                    <span class="stat-trend up">+5</span>
+                </div>
+                <div class="stat-body">
+                    <h3>{{ employee.tasks_completed if employee else 0 }}</h3>
+                    <p>Bajarilgan</p>
+                </div>
+                <div class="stat-footer">
+                    <span>Bu hafta</span>
+                </div>
+            </div>
+
+            <div class="stat-card warning">
+                <div class="stat-header">
+                    <span class="stat-icon">⏰</span>
+                    <span class="stat-trend">2</span>
+                </div>
+                <div class="stat-body">
+                    <h3>3</h3>
+                    <p>Kutilmoqda</p>
+                </div>
+                <div class="stat-footer">
+                    <span>Muddati yaqin</span>
+                </div>
+            </div>
+
+            <div class="stat-card info">
+                <div class="stat-header">
+                    <span class="stat-icon">🎯</span>
+                </div>
+                <div class="stat-body">
+                    <h3>{{ ((employee.tasks_completed / employee.tasks_today * 100) | int) if employee and
+                        employee.tasks_today > 0 else 0 }}%</h3>
+                    <p>Bajarilish</p>
+                </div>
+                <div class="stat-footer">
+                    <div class="progress-bar">
+                        <div class="progress-fill"
+                            style="width: { ((employee.tasks_completed / employee.tasks_today * 100) | int) if employee and employee.tasks_today > 0 else 0 }">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="dashboard-grid">
+            <!-- Tasks Preview -->
+            <div class="dashboard-card tasks-preview">
+                <div class="card-header">
+                    <h3>📌 Bugungi vazifalar</h3>
+                    <a href="/employee/tasks" class="view-all">Barcha →</a>
+                </div>
+                <div class="card-body">
+                    <div class="task-list">
+                        <div class="task-item priority-high">
+                            <input type="checkbox" id="task1">
+                            <label for="task1">
+                                <span class="task-title">Hisobotni tayyorlash</span>
+                                <span class="task-time">⏰ 14:00</span>
+                            </label>
+                            <span class="priority-badge high">Muhim</span>
+                        </div>
+
+                        <div class="task-item priority-medium">
+                            <input type="checkbox" id="task2">
+                            <label for="task2">
+                                <span class="task-title">Yig'ilishda qatnashish</span>
+                                <span class="task-time">⏰ 15:30</span>
+                            </label>
+                            <span class="priority-badge medium">O'rtacha</span>
+                        </div>
+
+                        <div class="task-item priority-low">
+                            <input type="checkbox" id="task3">
+                            <label for="task3">
+                                <span class="task-title">Email javoblarini yozish</span>
+                                <span class="task-time">⏰ 17:00</span>
+                            </label>
+                            <span class="priority-badge low">Past</span>
+                        </div>
+
+                        <div class="task-item">
+                            <input type="checkbox" id="task4">
+                            <label for="task4">
+                                <span class="task-title">Proyektni ko'rib chiqish</span>
+                                <span class="task-time">Bugun</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Widget -->
+            <div class="dashboard-card calendar-widget">
+                <div class="card-header">
+                    <h3>📅 Kalendar</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mini-calendar">
+                        <div class="calendar-header">
+                            <button class="calendar-nav">←</button>
+                            <span class="calendar-month">Dekabr 2025</span>
+                            <button class="calendar-nav">→</button>
+                        </div>
+                        <div class="calendar-days">
+                            <span>Du</span>
+                            <span>Se</span>
+                            <span>Ch</span>
+                            <span>Pa</span>
+                            <span>Ju</span>
+                            <span>Sh</span>
+                            <span>Ya</span>
+                        </div>
+                        <div class="calendar-dates">
+                            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+                            <span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span
+                                class="today">14</span>
+                            <span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span>
+                            <span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span>
+                            <span>29</span><span>30</span><span>31</span>
+                        </div>
+                    </div>
+                    <div class="upcoming-events">
+                        <h4>Yaqin tadbirlar</h4>
+                        <div class="event-item">
+                            <span class="event-dot blue"></span>
+                            <div>
+                                <p class="event-title">Jamoaviy yig'ilish</p>
+                                <p class="event-time">Ertaga, 10:00</p>
+                            </div>
+                        </div>
+                        <div class="event-item">
+                            <span class="event-dot green"></span>
+                            <div>
+                                <p class="event-title">Proyekt taqdimoti</p>
+                                <p class="event-time">18-dekabr, 14:00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="dashboard-card activity-feed">
+                <div class="card-header">
+                    <h3>📊 So'nggi faoliyat</h3>
+                </div>
+                <div class="card-body">
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon success">✓</div>
+                            <div class="activity-content">
+                                <p class="activity-title">Vazifa bajarildi</p>
+                                <p class="activity-time">10 daqiqa oldin</p>
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon info">📧</div>
+                            <div class="activity-content">
+                                <p class="activity-title">Yangi xabar keldi</p>
+                                <p class="activity-time">1 soat oldin</p>
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon warning">📝</div>
+                            <div class="activity-content">
+                                <p class="activity-title">Vazifa yangilandi</p>
+                                <p class="activity-time">2 soat oldin</p>
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon primary">🎯</div>
+                            <div class="activity-content">
+                                <p class="activity-title">Yangi vazifa tayinlandi</p>
+                                <p class="activity-time">Bugun, 09:00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/employee_dashboard.js') }}"></script>
+{% endblock %}

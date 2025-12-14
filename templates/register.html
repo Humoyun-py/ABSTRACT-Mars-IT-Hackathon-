@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Ro'yxatdan o'tish - Employee Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-box">
+        <div class="login-header">
+            <h1>🚀 Employee Platform</h1>
+            <p>Ro'yxatdan o'tish</p>
+        </div>
+
+        <form id="registerForm" class="login-form">
+            <div class="form-group">
+                <label for="full_name">👤 To'liq ism</label>
+                <input type="text" id="full_name" name="full_name" placeholder="Ism Familiya" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">📧 Email</label>
+                <input type="email" id="email" name="email" placeholder="email@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">📱 Telefon</label>
+                <input type="tel" id="phone" name="phone" placeholder="+998901234567">
+            </div>
+
+            <div class="form-group">
+                <label for="position">💼 Lavozim</label>
+                <input type="text" id="position" name="position" placeholder="Masalan: Dasturchi">
+            </div>
+
+            <div class="form-group">
+                <label for="department">🏢 Bo'lim</label>
+                <input type="text" id="department" name="department" placeholder="Masalan: IT">
+            </div>
+
+            <div class="form-group">
+                <label for="password">🔒 Parol</label>
+                <div class="password-input">
+                    <input type="password" id="password" name="password" placeholder="••••••••" required minlength="6">
+                    <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                        👁️
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">🔒 Parolni tasdiqlang</label>
+                <div class="password-input">
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" required
+                        minlength="6">
+                    <button type="button" class="toggle-password" onclick="togglePassword('confirm_password')">
+                        👁️
+                    </button>
+                </div>
+            </div>
+
+            <div id="errorMessage" class="error-message"></div>
+
+            <button type="submit" class="login-btn" id="registerBtn">
+                <span class="btn-text">Ro'yxatdan o'tish</span>
+                <span class="btn-loading" style="display: none;">⏳ Yuklanmoqda...</span>
+            </button>
+        </form>
+
+        <div class="login-footer">
+            <p>Allaqachon hisobingiz bormi? <a href="/login" style="color: #4F46E5; font-weight: 600;">Kirish</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/register.js') }}"></script>
+{% endblock %}

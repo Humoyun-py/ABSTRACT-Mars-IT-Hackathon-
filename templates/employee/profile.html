@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block title %}Profil{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<style>
+    .task-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .tab-btn {
+        padding: 0.75rem 1.5rem;
+        background: white;
+        border: 1px solid var(--gray-300);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: var(--transition);
+        font-weight: 500;
+    }
+
+    .tab-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .tab-btn:hover:not(.active) {
+        background: var(--gray-100);
+    }
+
+    .task-cards {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .task-card-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 4px solid var(--gray-300);
+    }
+
+    .task-card-header.priority-high {
+        border-left-color: var(--error);
+    }
+
+    .task-card-header.priority-medium {
+        border-left-color: var(--warning);
+    }
+
+    .task-card-header.priority-low {
+        border-left-color: var(--info);
+    }
+
+    .task-card-header h3 {
+        margin: 0;
+    }
+
+    .task-description {
+        color: var(--gray-600);
+        margin-bottom: 1rem;
+    }
+
+    .task-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+        color: var(--gray-600);
+    }
+
+    .task-actions {
+        display: flex;
+        gap: 0.75rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--gray-200);
+    }
+
+    .btn-success {
+        padding: 0.5rem 1rem;
+        background: var(--success);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .profile-section {
+        margin-bottom: 2rem;
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+    }
+
+    .profile-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .profile-main {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .profile-avatar-card {
+        text-align: center;
+    }
+
+    .profile-avatar-large {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        font-weight: 700;
+        margin: 0 auto 1rem;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .profile-info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .info-item {
+        padding: 1rem;
+        background: var(--gray-50);
+        border-radius: var(--radius-md);
+    }
+
+    .info-label {
+        font-size: 0.875rem;
+        color: var(--gray-500);
+        margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: var(--gray-900);
+    }
+
+    @media (max-width: 768px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .task-tabs {
+            flex-wrap: wrap;
+        }
+
+        .task-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="employee-container">
+    <!-- Sidebar -->
+    <!-- Sidebar -->
+    {% include "employee/_sidebar.html" %}
+
+    <!-- Main -->
+    <main class="employee-main">
+        <header class="employee-header">
+            <div class="header-left">
+                <h1>👤 Profilim</h1>
+                <p class="header-subtitle">Shaxsiy ma'lumotlaringiz</p>
+            </div>
+            <div class="header-right">
+                <button class="btn-primary" onclick="alert('Tahrirlash funksiyasi tez orada!')">✏️ Tahrirlash</button>
+            </div>
+        </header>
+
+        <!-- Profile Grid -->
+        <div class="profile-grid">
+            <!-- Sidebar -->
+            <div class="profile-sidebar">
+                <div class="dashboard-card profile-avatar-card">
+                    <div class="card-body">
+                        <div class="profile-avatar-large">
+                            {{ employee.full_name[0] if employee else 'U' }}
+                        </div>
+                        <h2 style="margin: 0;">{{ employee.full_name if employee else 'Xodim' }}</h2>
+                        <p style="color: var(--gray-600); margin: 0.5rem 0;">{{ employee.position if employee else
+                            'Lavozim' }}</p>
+                        <p style="color: var(--gray-500); font-size: 0.875rem; margin: 0;">{{ employee.department if
+                            employee else 'Bo\'lim' }}</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>📊 Statistika</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-item">
+                            <div class="info-label">Jami vazifalar</div>
+                            <div class="info-value">{{ employee.tasks_today + employee.tasks_completed if employee else
+                                0 }}</div>
+                        </div>
+                        <div class="info-item" style="margin-top: 0.75rem;">
+                            <div class="info-label">Bajarilgan</div>
+                            <div class="info-value">{{ employee.tasks_completed if employee else 0 }}</div>
+                        </div>
+                        <div class="info-item" style="margin-top: 0.75rem;">
+                            <div class="info-label">Samaradorlik</div>
+                            <div class="info-value">{{ ((employee.tasks_completed / employee.tasks_today * 100) | int)
+                                if employee and employee.tasks_today > 0 else 0 }}%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main -->
+            <div class="profile-main">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>📋 Umumiy ma'lumot</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="profile-info-grid">
+                            <div class="info-item">
+                                <div class="info-label">To'liq ism</div>
+                                <div class="info-value">{{ employee.full_name if employee else '-' }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Email</div>
+                                <div class="info-value">{{ current_user.email }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Telefon</div>
+                                <div class="info-value">{{ current_user.phone if current_user.phone else '-' }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Lavozim</div>
+                                <div class="info-value">{{ employee.position if employee else '-' }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Bo'lim</div>
+                                <div class="info-value">{{ employee.department if employee else '-' }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Status</div>
+                                <div class="info-value">{{ 'Faol' if employee and employee.status == 'active' else
+                                    'Nofaol' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>🎯 Ish faoliyati</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <div class="activity-icon success">✓</div>
+                                <div class="activity-content">
+                                    <p class="activity-title">3 ta vazifa bajarildi</p>
+                                    <p class="activity-time">Bugun</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon info">📝</div>
+                                <div class="activity-content">
+                                    <p class="activity-title">Hisobot yuklandi</p>
+                                    <p class="activity-time">Kecha</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon warning">👥</div>
+                                <div class="activity-content">
+                                    <p class="activity-title">Yig'ilishda qatnashdi</p>
+                                    <p class="activity-time">3 kun oldin</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/employee_dashboard.js') }}"></script>
+{% endblock %}

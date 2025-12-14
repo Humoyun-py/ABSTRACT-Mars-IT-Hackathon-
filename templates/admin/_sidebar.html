@@ -1,0 +1,37 @@
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h2>👑 Admin Panel</h2>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/admin/dashboard" class="menu-item {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+            <span class="icon">📊</span>
+            <span>Dashboard</span>
+        </a>
+        <a href="/admin/employees" class="menu-item {% if request.endpoint == 'admin_employees' %}active{% endif %}">
+            <span class="icon">👥</span>
+            <span>Xodimlar</span>
+        </a>
+        <a href="/admin/statistics" class="menu-item {% if request.endpoint == 'admin_statistics' %}active{% endif %}">
+            <span class="icon">📈</span>
+            <span>Statistika</span>
+        </a>
+        <a href="/admin/salary" class="menu-item {% if request.endpoint == 'admin_salary' %}active{% endif %}">
+            <span class="icon">💰</span>
+            <span>Maosh</span>
+        </a>
+        <a href="/admin/bot" class="menu-item {% if request.endpoint == 'admin_bot' %}active{% endif %}">
+            <span class="icon">🤖</span>
+            <span>Telegram Bot</span>
+        </a>
+        <a href="/admin/logs" class="menu-item {% if request.endpoint == 'admin_logs' %}active{% endif %}">
+            <span class="icon">📜</span>
+            <span>Loglar</span>
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <button onclick="logout()" class="logout-btn">
+            <span>🚪</span>
+            <span>Chiqish</span>
+        </button>
+    </div>
+</aside>

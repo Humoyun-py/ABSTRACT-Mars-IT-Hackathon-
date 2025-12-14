@@ -1,0 +1,42 @@
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo"
+            style="max-width: 100%; height: auto; max-height: 50px;">
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/employee/dashboard"
+            class="menu-item {% if request.endpoint == 'employee_dashboard' %}active{% endif %}">
+            <span class="icon">🏠</span>
+            <span>Dashboard</span>
+        </a>
+        <a href="/employee/tasks" class="menu-item {% if request.endpoint == 'employee_tasks' %}active{% endif %}">
+            <span class="icon">📋</span>
+            <span>Vazifalarim</span>
+        </a>
+        <a href="/employee/profile" class="menu-item {% if request.endpoint == 'employee_profile' %}active{% endif %}">
+            <span class="icon">👤</span>
+            <span>Profil</span>
+        </a>
+        <a href="/employee/calendar"
+            class="menu-item {% if request.endpoint == 'employee_calendar' %}active{% endif %}">
+            <span class="icon">📅</span>
+            <span>Kalendar</span>
+        </a>
+        <a href="/employee/messages"
+            class="menu-item {% if request.endpoint == 'employee_messages' %}active{% endif %}">
+            <span class="icon">💬</span>
+            <span>Xabarlar</span>
+        </a>
+        <a href="/employee/settings"
+            class="menu-item {% if request.endpoint == 'employee_settings' %}active{% endif %}">
+            <span class="icon">⚙️</span>
+            <span>Sozlamalar</span>
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <button onclick="logout()" class="logout-btn">
+            <span>🚪</span>
+            <span>Chiqish</span>
+        </button>
+    </div>
+</aside>
